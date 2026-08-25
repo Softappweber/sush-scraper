@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Contact Scraper Pro - Web Edition</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f3f4f6;
+            --card: #ffffff;
+            --text: #1f2937;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header p {
+            color: #6b7280;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .panel {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .panel h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .country-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .country-btn {
+            padding: 10px 20px;
+            border: 2px solid var(--primary);
+            background: white;
+            color: var(--primary);
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .country-btn:hover,
+        .country-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .config-group {
+            margin-bottom: 15px;
+        }
+
+        .config-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .config-group input,
+        .config-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background: #e5e7eb;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .results-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+        }
+
+        .results-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .results-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+
+        .log-container {
+            background: #1a1a2e;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card .number {
+            font-size: 2em;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-card .label {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Contact Scraper Pro</h1>
+            <p>Web Edition - No Installation Required</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" id="totalContacts">0</div>
+                <div class="label">Total Contacts</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalEmails">0</div>
+                <div class="label">Emails</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" id="totalPhones">0</div>
+                <div class="label">Phones</div>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel">
+                <h2>🌍 Select Country</h2>
+                <div class="country-buttons">
+                    <button class="country-btn active" data-country="usa" onclick="selectCountry('usa')">🇺🇸 USA</button>
+                    <button class="country-btn" data-country="germany" onclick="selectCountry('germany')">🇩🇪 Germany</button>
+                    <button class="country-btn" data-country="kuwait" onclick="selectCountry('kuwait')">🇰🇼 Kuwait</button>
+                    <button class="country-btn" data-country="india" onclick="selectCountry('india')">🇮🇳 India</button>
+                    <button class="country-btn" data-country="uk" onclick="selectCountry('uk')">🇬🇧 UK</button>
+                    <button class="country-btn" data-country="canada" onclick="selectCountry('canada')">🇨🇦 Canada</button>
+                </div>
+
+                <h2 style="margin-top: 20px;">📝 Business Type</h2>
+                <select id="businessType" style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 6px;">
+                    <option value="plumber">Plumber</option>
+                    <option value="restaurant">Restaurant</option>
+                    <option value="doctor">Doctor</option>
+                    <option value="lawyer">Lawyer</option>
+                    <option value="contractor">Contractor</option>
+                    <option value="electrician">Electrician</option>
+                    <option value="dentist">Dentist</option>
+                    <option value="salon">Salon</option>
+                    <option value="gym">Gym</option>
+                    <option value="hotel">Hotel</option>
+                </select>
+
+                <h2 style="margin-top: 20px;">📍 City (Optional)</h2>
+                <input type="text" id="city" placeholder="e.g., New York, Berlin, Mumbai" style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 6px;">
+
+                <div style="text-align: center; margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="startScraping()" id="startBtn">
+                        🚀 Start Scraping
+                    </button>
+                    <button class="btn btn-success" onclick="downloadCSV()" id="downloadBtn" disabled>
+                        📥 Download CSV
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>⚙️ Configuration</h2>
+                <div class="config-group">
+                    <label>🎯 Target Contacts:</label>
+                    <input type="number" id="maxContacts" value="200" min="10" max="500">
+                </div>
+                <div class="config-group">
+                    <label>📧 API Key (ScraperAPI):</label>
+                    <input type="text" id="apiKey" placeholder="Paste your ScraperAPI key" style="width: 100%; padding: 10px; border: 2px solid var(--border); border-radius: 6px;">
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">
+                        Get free key at <a href="https://www.scraperapi.com/" target="_blank">scraperapi.com</a> (5000 free requests)
+                    </p>
+                </div>
+                <div class="config-group">
+                    <label>⏱️ Delay (seconds):</label>
+                    <input type="number" id="delay" value="1" min="0" max="5" step="0.5">
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%">0%</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>📊 Results</h2>
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Country</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #6b7280;">
+                                Select country and click Start Scraping
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>📋 Activity Log</h2>
+            <div class="log-container" id="logContainer">
+                <div>[System] Ready. Select country and start scraping.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let contacts = [];
+        let currentCountry = 'usa';
+        let scraping = false;
+
+        const COUNTRY_CONFIGS = {
+            usa: {
+                name: 'USA',
+                urls: [
+                    'https://www.merchantcircle.com/{business}/{city}',
+                    'https://www.superpages.com/search?search={business}&loc={city}',
+                    'https://www.bbb.org/search?find_text={business}&find_loc={city}'
+                ]
+            },
+            germany: {
+                name: 'Germany',
+                urls: [
+                    'https://www.gelbeseiten.de/suche/{business}/{city}',
+                    'https://www.dastelefonbuch.de/Suche/{business}/{city}'
+                ]
+            },
+            india: {
+                name: 'India',
+                urls: [
+                    'https://www.justdial.com/{city}/{business}',
+                    'https://www.sulekha.com/{business}/{city}'
+                ]
+            },
+            kuwait: {
+                name: 'Kuwait',
+                urls: [
+                    'https://www.kuwaitlocal.com/search/{business}',
+                    'https://www.kuwaitbusinessdirectory.com/{business}'
+                ]
+            },
+            uk: {
+                name: 'UK',
+                urls: [
+                    'https://www.yell.com/ucs/UcsSearchAction.do?keywords={business}&location={city}',
+                    'https://www.thomsonlocal.com/search/{business}/{city}'
+                ]
+            },
+            canada: {
+                name: 'Canada',
+                urls: [
+                    'https://www.yellowpages.ca/search/si/1/{business}/{city}',
+                    'https://www.canpages.ca/business/{business}/{city}'
+                ]
+            }
+        };
+
+        function selectCountry(country) {
+            currentCountry = country;
+            document.querySelectorAll('.country-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-country="${country}"]`).classList.add('active');
+            log(`Country selected: ${COUNTRY_CONFIGS[country].name}`);
+        }
+
+        function log(message) {
+            const logContainer = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.innerHTML = `<span style="color:#6b7280">[${time}]</span> ${message}`;
+            logContainer.appendChild(entry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function isValidEmail(email) {
+            return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+        }
+
+        function isValidPhone(phone) {
+            const digits = phone.replace(/[^\d+]/g, '');
+            return digits.length >= 10 && digits.length <= 15;
+        }
+
+        function extractEmails(text) {
+            const emails = new Set();
+            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+            const matches = text.match(emailRegex) || [];
+            matches.forEach(email => {
+                email = email.toLowerCase();
+                if (isValidEmail(email) && !email.endsWith('.png') && !email.endsWith('.jpg')) {
+                    emails.add(email);
+                }
+            });
+            return Array.from(emails);
+        }
+
+        function extractPhones(text) {
+            const phones = new Set();
+            const patterns = [
+                /\+?\d{1,3}[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g,
+                /\+\d{10,13}/g
+            ];
+            patterns.forEach(pattern => {
+                const matches = text.match(pattern) || [];
+                matches.forEach(phone => {
+                    const cleaned = phone.trim();
+                    if (isValidPhone(cleaned)) {
+                        phones.add(cleaned);
+                    }
+                });
+            });
+            return Array.from(phones);
+        }
+
+        function extractNames(html) {
+            const names = new Set();
+            const nameRegex = /<h[1-4][^>]*>(.*?)<\/h[1-4]>/gi;
+            const matches = html.match(nameRegex) || [];
+            matches.forEach(match => {
+                const name = match.replace(/<[^>]+>/g, '').trim();
+                if (name.length > 2 && name.length < 100 && !/\d/.test(name)) {
+                    names.add(name);
+                }
+            });
+            return Array.from(names);
+        }
+
+        async function fetchViaScraperAPI(url, apiKey) {
+            if (!apiKey) {
+                log('⚠️ No API key provided. Using direct fetch...');
+                try {
+                    const response = await fetch(url);
+                    return await response.text();
+                } catch (e) {
+                    return null;
+                }
+            }
+            
+            const apiUrl = `http://api.scraperapi.com?api_key=${apiKey}&url=${encodeURIComponent(url)}`;
+            try {
+                const response = await fetch(apiUrl);
+                if (response.ok) {
+                    return await response.text();
+                }
+            } catch (e) {
+                log(`❌ ScraperAPI error: ${e.message}`);
+            }
+            return null;
+        }
+
+        async function scrapeURL(url) {
+            const apiKey = document.getElementById('apiKey').value.trim();
+            const html = await fetchViaScraperAPI(url, apiKey);
+            
+            if (!html) {
+                log(`❌ Failed to fetch: ${url}`);
+                return [];
+            }
+            
+            const emails = extractEmails(html);
+            const phones = extractPhones(html);
+            const names = extractNames(html);
+            
+            log(`📊 Found: ${emails.length} emails, ${phones.length} phones from ${url}`);
+            
+            const results = [];
+            for (let i = 0; i < Math.max(emails.length, phones.length); i++) {
+                const email = emails[i] || '';
+                const phone = phones[i] || '';
+                const name = names[i] || '';
+                
+                if (email || phone) {
+                    results.push({
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        country: COUNTRY_CONFIGS[currentCountry].name
+                    });
+                }
+            }
+            
+            return results;
+        }
+
+        async function startScraping() {
+            const business = document.getElementById('businessType').value;
+            const city = document.getElementById('city').value.trim() || 'New York';
+            const maxContacts = parseInt(document.getElementById('maxContacts').value);
+            const delay = parseFloat(document.getElementById('delay').value) * 1000;
+            
+            contacts = [];
+            scraping = true;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('progressContainer').style.display = 'block';
+            
+            log(`🚀 Starting scrape: ${business} in ${city} (${COUNTRY_CONFIGS[currentCountry].name})`);
+            
+            const urlTemplates = COUNTRY_CONFIGS[currentCountry].urls;
+            const urls = urlTemplates.map(t => t.replace('{business}', business).replace('{city}', city));
+            
+            for (const url of urls) {
+                if (!scraping || contacts.length >= maxContacts) break;
+                
+                log(`🔍 Scraping: ${url}`);
+                const results = await scrapeURL(url);
+                
+                results.forEach(contact => {
+                    if (contacts.length < maxContacts) {
+                        // Deduplicate
+                        const exists = contacts.some(c => c.email === contact.email && contact.email !== '');
+                        if (!exists) {
+                            contacts.push(contact);
+                        }
+                    }
+                });
+                
+                updateResults();
+                await new Promise(resolve => setTimeout(resolve, delay));
+            }
+            
+            scraping = false;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('progressContainer').style.display = 'none';
+            
+            log(`✅ Complete! Total: ${contacts.length} contacts`);
+        }
+
+        function updateResults() {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            
+            contacts.forEach((contact, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${contact.name || 'N/A'}</td>
+                    <td>${contact.email || 'N/A'}</td>
+                    <td>${contact.phone || 'N/A'}</td>
+                    <td>${contact.country}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('totalContacts').textContent = contacts.length;
+            document.getElementById('totalEmails').textContent = contacts.filter(c => c.email).length;
+            document.getElementById('totalPhones').textContent = contacts.filter(c => c.phone).length;
+            
+            const progress = Math.min((contacts.length / parseInt(document.getElementById('maxContacts').value)) * 100, 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressFill').textContent = Math.round(progress) + '%';
+        }
+
+        function downloadCSV() {
+            if (!contacts.length) {
+                alert('No contacts to download');
+                return;
+            }
+            
+            let csv = 'Name,Email,Phone,Country\n';
+            contacts.forEach(c => {
+                csv += `"${c.name}","${c.email}","${c.phone}","${c.country}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `contacts_${Date.now()}.csv`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
