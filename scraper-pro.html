@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Contact Scraper - No API Key Needed</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .panel {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .country-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .country-btn {
+            padding: 8px 16px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .country-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .results-table th {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-size: 13px;
+        }
+        .results-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 13px;
+        }
+        .table-container {
+            max-height: 350px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .log-container {
+            background: #1a1a2e;
+            color: #10b981;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 11px;
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        .stat {
+            display: inline-block;
+            background: #f3f4f6;
+            padding: 10px 20px;
+            border-radius: 10px;
+            margin: 5px;
+            text-align: center;
+        }
+        .stat .num {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Contact Scraper Pro</h1>
+            <p>No API Key Required - Free CORS Proxies</p>
+        </div>
+
+        <div class="panel">
+            <div class="stat"><div class="num" id="totalContacts">0</div><div>Contacts</div></div>
+            <div class="stat"><div class="num" id="totalEmails">0</div><div>Emails</div></div>
+            <div class="stat"><div class="num" id="totalPhones">0</div><div>Phones</div></div>
+        </div>
+
+        <div class="panel">
+            <h3>🌍 Country:</h3>
+            <div class="country-buttons">
+                <button class="country-btn active" onclick="selectCountry('usa', this)">🇺🇸 USA</button>
+                <button class="country-btn" onclick="selectCountry('germany', this)">🇩🇪 Germany</button>
+                <button class="country-btn" onclick="selectCountry('india', this)">🇮🇳 India</button>
+                <button class="country-btn" onclick="selectCountry('kuwait', this)">🇰🇼 Kuwait</button>
+                <button class="country-btn" onclick="selectCountry('uk', this)">🇬🇧 UK</button>
+            </div>
+
+            <h3>🏢 Business Type:</h3>
+            <select id="businessType">
+                <option value="doctor">Doctor</option>
+                <option value="plumber">Plumber</option>
+                <option value="restaurant">Restaurant</option>
+                <option value="lawyer">Lawyer</option>
+                <option value="hotel">Hotel</option>
+                <option value="school">School</option>
+            </select>
+
+            <h3>📍 City:</h3>
+            <input type="text" id="city" placeholder="e.g., New York, Berlin, Mumbai, Kuwait City">
+
+            <div style="text-align:center; margin-top:15px;">
+                <button class="btn btn-primary" onclick="startScraping()" id="startBtn">🚀 Start Scraping</button>
+                <button class="btn btn-success" onclick="downloadCSV()" id="downloadBtn" disabled>📥 Download CSV</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>📊 Results:</h3>
+            <div class="table-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Source</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultsBody">
+                        <tr><td colspan="4" style="text-align:center;color:#6b7280;">Select country and click Start</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h3>📋 Log:</h3>
+            <div class="log-container" id="logContainer">
+                <div>Ready. Select country and start.</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let contacts = [];
+        let currentCountry = 'usa';
+        let scraping = false;
+
+        const PROXIES = [
+            (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+            (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`,
+            (url) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+        ];
+
+        const COUNTRY_URLS = {
+            usa: (business, city) => [
+                `https://www.merchantcircle.com/${business}/${city}`,
+                `https://www.superpages.com/search?search=${business}&loc=${city}`
+            ],
+            germany: (business, city) => [
+                `https://www.gelbeseiten.de/suche/${business}/${city}`,
+                `https://www.dastelefonbuch.de/Suche/${business}/${city}`
+            ],
+            india: (business, city) => [
+                `https://www.justdial.com/${city}/${business}`,
+                `https://www.sulekha.com/${business}/${city}`
+            ],
+            kuwait: (business, city) => [
+                `https://www.kuwaitlocal.com/search/${business}`,
+                `https://www.kuwaitbusinessdirectory.com/${business}`
+            ],
+            uk: (business, city) => [
+                `https://www.yell.com/ucs/UcsSearchAction.do?keywords=${business}&location=${city}`
+            ]
+        };
+
+        function selectCountry(country, btn) {
+            currentCountry = country;
+            document.querySelectorAll('.country-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            log(`Country: ${country.toUpperCase()}`);
+        }
+
+        function log(msg) {
+            const logDiv = document.getElementById('logContainer');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.innerHTML = `<span style="color:#6b7280">[${time}]</span> ${msg}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        async function fetchWithProxy(url) {
+            for (const proxyFn of PROXIES) {
+                try {
+                    const proxyUrl = proxyFn(url);
+                    log(`Trying proxy: ${proxyUrl.substring(0, 50)}...`);
+                    const response = await fetch(proxyUrl);
+                    if (response.ok) {
+                        const text = await response.text();
+                        if (text && text.length > 100) {
+                            log(`✅ Success! Got ${text.length} bytes`);
+                            return text;
+                        }
+                    }
+                } catch (e) {
+                    log(`❌ Proxy failed: ${e.message}`);
+                }
+            }
+            log(`❌ All proxies failed for: ${url}`);
+            return null;
+        }
+
+        function extractEmails(text) {
+            const emails = new Set();
+            const regex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+            const matches = text.match(regex) || [];
+            matches.forEach(email => {
+                email = email.toLowerCase();
+                if (!email.endsWith('.png') && !email.endsWith('.jpg') && !email.includes('..')) {
+                    emails.add(email);
+                }
+            });
+            return Array.from(emails);
+        }
+
+        function extractPhones(text) {
+            const phones = new Set();
+            const patterns = [
+                /\+?\d{1,3}[-.\s]?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g,
+                /\+\d{10,13}/g,
+                /\(\d{3}\)\s?\d{3}-\d{4}/g
+            ];
+            patterns.forEach(pattern => {
+                const matches = text.match(pattern) || [];
+                matches.forEach(phone => {
+                    const digits = phone.replace(/[^\d+]/g, '');
+                    if (digits.length >= 10 && digits.length <= 15) {
+                        phones.add(phone.trim());
+                    }
+                });
+            });
+            return Array.from(phones);
+        }
+
+        async function startScraping() {
+            const business = document.getElementById('businessType').value;
+            const city = document.getElementById('city').value.trim() || 'New York';
+            
+            contacts = [];
+            scraping = true;
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('downloadBtn').disabled = true;
+            
+            log(`🚀 Starting: ${business} in ${city} (${currentCountry})`);
+            
+            const urls = COUNTRY_URLS[currentCountry](business, city);
+            
+            for (const url of urls) {
+                if (!scraping) break;
+                
+                log(`🔍 Scraping: ${url}`);
+                const html = await fetchWithProxy(url);
+                
+                if (!html) continue;
+                
+                const emails = extractEmails(html);
+                const phones = extractPhones(html);
+                
+                log(`📊 Found: ${emails.length} emails, ${phones.length} phones`);
+                
+                for (let i = 0; i < Math.max(emails.length, phones.length); i++) {
+                    const email = emails[i] || '';
+                    const phone = phones[i] || '';
+                    
+                    if (!email && !phone) continue;
+                    
+                    // Deduplicate
+                    const exists = contacts.some(c => c.email === email && email !== '');
+                    if (!exists) {
+                        contacts.push({
+                            email: email,
+                            phone: phone,
+                            source: url,
+                            country: currentCountry
+                        });
+                    }
+                }
+                
+                updateResults();
+                await new Promise(r => setTimeout(r, 2000));
+            }
+            
+            scraping = false;
+            document.getElementById('startBtn').disabled = false;
+            document.getElementById('downloadBtn').disabled = false;
+            
+            log(`✅ Done! Total: ${contacts.length} contacts`);
+        }
+
+        function updateResults() {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            
+            contacts.forEach((c, i) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${c.email || 'N/A'}</td>
+                    <td>${c.phone || 'N/A'}</td>
+                    <td>${c.source.substring(0, 50)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('totalContacts').textContent = contacts.length;
+            document.getElementById('totalEmails').textContent = contacts.filter(c => c.email).length;
+            document.getElementById('totalPhones').textContent = contacts.filter(c => c.phone).length;
+        }
+
+        function downloadCSV() {
+            if (!contacts.length) {
+                alert('No contacts!');
+                return;
+            }
+            
+            let csv = 'Email,Phone,Source,Country\n';
+            contacts.forEach(c => {
+                csv += `"${c.email}","${c.phone}","${c.source}","${c.country}"\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `contacts_${Date.now()}.csv`;
+            link.click();
+        }
+    </script>
+</body>
+</html>
